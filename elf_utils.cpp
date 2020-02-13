@@ -1,6 +1,7 @@
 #include "elf_utils.h"
 #include "log.h"
 #include "elf.h"
+#include <cstring>
 #include<stdio.h>
 #include<sys/types.h>
 #include <sys/stat.h>

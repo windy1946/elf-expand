@@ -1,5 +1,6 @@
 #include <string.h>
 #include <iostream>
+#include <cstring>
 #include "elf.h"
 #include "elf_utils.h" 
 
