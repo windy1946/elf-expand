@@ -140,11 +140,11 @@ bool expand_elf::expand(long expand_size){
             unsigned sh_offset = shdr->sh_offset;
             unsigned sh_entsize = shdr->sh_entsize;
 
-            if(xct_vaddr == sh_offset){
-                shdr->sh_size += expand_size;
-            }
+            // if(xct_vaddr == sh_offset){
+            //     shdr->sh_size += expand_size;
+            // }
 
-            if(xct_vaddr < sh_offset){
+            if(xct_vaddr <= sh_offset){
                 shdr->sh_addr += expand_size;
                 shdr->sh_offset += expand_size;
             }
@@ -307,11 +307,11 @@ bool expand_elf::expand(long expand_size){
             unsigned sh_offset = shdr->sh_offset;
             unsigned sh_entsize = shdr->sh_entsize;
             
-            if(xct_vaddr == sh_offset){
-                shdr->sh_size += expand_size;
-            }
+            // if(xct_vaddr == sh_offset){
+            //     shdr->sh_size += expand_size;
+            // }
 
-            if(xct_vaddr < sh_offset){
+            if(xct_vaddr <= sh_offset){
                 shdr->sh_addr += expand_size;
                 shdr->sh_offset += expand_size;
             }
