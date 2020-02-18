@@ -46,12 +46,12 @@ expand_elf::expand_elf(const std::string& input_filename, const std::string& out
     
 };
 
-bool expand_elf::expand(){
+unsigned long expand_elf::expand(){
     long expand_size = 0x1000;
     return expand(expand_size);
 }
 
-bool expand_elf::expand(long expand_size){
+unsigned long expand_elf::expand(long expand_size){
     // long expand_size = 0x1000;
     // elf_utils elf(this->i_filename);
     LOGD("expand_size:%ld, xct_offset:%ld", expand_size, xct_offset);
@@ -65,7 +65,7 @@ bool expand_elf::expand(long expand_size){
     unsigned long filesize = elf.get_file_size();
     
     if(xct_vaddr<=0 || xct_vaddr > filesize){
-        return false;
+        return 0;
     }
 
     if(ARCH_BIT_32 == mode){
@@ -140,18 +140,18 @@ bool expand_elf::expand(long expand_size){
             unsigned sh_offset = shdr->sh_offset;
             unsigned sh_entsize = shdr->sh_entsize;
 
-            if(xct_vaddr == sh_offset){
-                shdr->sh_size += expand_size;
-            }
+            // if(xct_vaddr == sh_offset){
+            //     shdr->sh_size += expand_size;
+            // }
 
-            if(xct_vaddr < sh_offset){
+            if(xct_vaddr <= sh_offset){
                 shdr->sh_addr += expand_size;
                 shdr->sh_offset += expand_size;
             }
 
             if(SHT_RELA == sh_type){
                 if(sizeof(Elf32_Rela) != sh_entsize){
-                    return false;
+                    return 0;
                 }
                 unsigned long plt_off = ~0u;
                 Elf32_Rela* relab = (Elf32_Rela*)(buffer + sh_offset);
@@ -184,7 +184,7 @@ bool expand_elf::expand(long expand_size){
 
             if(SHT_REL == sh_type){
                 if(sizeof(Elf32_Rel) != sh_entsize){
-                    return false;
+                    return 0;
                 }
                 unsigned long plt_off = ~0u;
                 Elf32_Rel* rel0 = (Elf32_Rel*)(buffer + sh_offset);
@@ -307,18 +307,18 @@ bool expand_elf::expand(long expand_size){
             unsigned sh_offset = shdr->sh_offset;
             unsigned sh_entsize = shdr->sh_entsize;
             
-            if(xct_vaddr == sh_offset){
-                shdr->sh_size += expand_size;
-            }
+            // if(xct_vaddr == sh_offset){
+            //     shdr->sh_size += expand_size;
+            // }
 
-            if(xct_vaddr < sh_offset){
+            if(xct_vaddr <= sh_offset){
                 shdr->sh_addr += expand_size;
                 shdr->sh_offset += expand_size;
             }
 
             if(SHT_RELA == sh_type){
                 if(sizeof(Elf64_Rela) != sh_entsize){
-                    return false;
+                    return 0;
                 }
                 unsigned long plt_off = ~0u;
                 Elf64_Rela* relab = (Elf64_Rela*)(buffer + sh_offset);
@@ -351,7 +351,7 @@ bool expand_elf::expand(long expand_size){
 
             if(SHT_REL == sh_type){
                 if(sizeof(Elf64_Rel) != sh_entsize){
-                    return false;
+                    return 0;
                 }
                 unsigned long plt_off = ~0u;
                 Elf64_Rel* rel0 = (Elf64_Rel*)(buffer + sh_offset);
@@ -403,7 +403,7 @@ bool expand_elf::expand(long expand_size){
         ehdr->e_entry += expand_size;
         ehdr->e_shoff += expand_size;
     }else{
-        return false;
+        return 0;
     }
 
     unsigned char* bak_buffer = (unsigned char*)malloc(filesize + expand_size);
@@ -428,12 +428,13 @@ bool expand_elf::expand(long expand_size){
     }
     if(write(fd, bak_buffer, filesize+expand_size) != (ssize_t)(filesize+expand_size)){
         close(fd);
-        return false;
+        return 0;
     }
 
     // File::chmod(bak_filename.c_str(), 0777);
     close(fd);
-    return true;
+    
+    return xct_offset;
 }
 
 

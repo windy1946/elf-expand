@@ -9,8 +9,8 @@
 class expand_elf{
 public:    
     expand_elf(const std::string& input_filename, const std::string& output_filename);
-    bool expand();
-    bool expand(long expand_size);
+    unsigned long expand();
+    unsigned long expand(long expand_size);
     bool remove_so();
     bool replace_so(std::string dst_filename);
 
